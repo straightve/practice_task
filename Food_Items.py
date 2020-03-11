@@ -30,3 +30,19 @@ class FoodItems:
             print("price must be positive")
             return
         self.__price = new_price
+
+    def set_stock(self, new_stock):
+        """Setter function - sets a new price for the comic.
+
+        Args:
+            new_stock (int): the new price for the comic
+        """
+        # catches any invalid values being passed from the UI
+        if new_stock is None or type(new_stock) is not int:
+            print("Price must be an integer")
+            return
+            # simple boundary test - is the price positive?
+        if new_stock < 0:
+            print("price must be greater than 0")
+            return
+        self.__price = new_stock
