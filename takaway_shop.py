@@ -160,12 +160,84 @@ def finish_order():
     takeaway_deleviry_window.title("takeaway or deleviry")
     takeaway_deleviry_window.geometry("440x208")
     takeaway_deleviry_window.option_add("*Font", "LucidaGrande 20")
-    Button(takeaway_deleviry_window, text="deleviry", bg="#4c69f6", fg="white").grid(row=0, column=0)
-    Button(takeaway_deleviry_window, text="takeaway", bg="#4c69f6", fg="white", command=lambda: takeaway()).grid(row=0,
-                                                                                                                 column=1)
+    Button(takeaway_deleviry_window, text="deleviry", bg="#4c69f6", fg="white",
+           command=lambda: deleviry(takeaway_deleviry_window)).grid(row=0, column=0)
+    Button(takeaway_deleviry_window, text="takeaway", bg="#4c69f6", fg="white",
+           command=lambda: takeaway(takeaway_deleviry_window)).grid(row=0, column=1)
 
 
-def takeaway():
+def deleviry(window):
+    """creates a window where you can enter details """
+    close_window(window)
+    # creates a window with 4 labels 2 buttons and 3 entries.
+    deleviry_window = Toplevel(root)
+    deleviry_window.title("deleviry")
+    deleviry_window.geometry("440x208")
+    deleviry_window.option_add("*Font", "LucidaGrande 20")
+
+    Label(deleviry_window, text="name:").grid(row=0, column=0, sticky=E)
+    Label(deleviry_window, text="adress:").grid(row=1, column=0, sticky=E)
+    Label(deleviry_window, text="phone:").grid(row=2, column=0, sticky=E)
+
+    str_person_name = StringVar("")
+    str_adress = StringVar("")
+    str_phone = StringVar("")
+    str_error_msg = StringVar("")
+
+    Entry(deleviry_window, textvariable=str_person_name).grid(row=0, column=1, sticky=E + W)
+    Entry(deleviry_window, textvariable=str_adress).grid(row=1, column=1, sticky=E + W)
+    Entry(deleviry_window, textvariable=str_phone).grid(row=2, column=1, sticky=E + W)
+
+    Label(deleviry_window, textvariable=str_error_msg, fg="red").grid(row=4,
+                                                                      column=0,
+                                                                      columnspan=2,
+                                                                      sticky=N + E + S + W)
+    # closes the window
+    Button(deleviry_window, text="Cancel", bg="#ffc510", fg="white",
+           command=lambda: close_window(deleviry_window)).grid(row=5,
+                                                               column=0,
+                                                               sticky=E)
+    # creates the comic and closes the window.
+    Button(deleviry_window, text="Create", bg="#f6db35", fg="white",
+           command=lambda: finish_deleviry(str_person_name.get(),
+                                           str_adress.get(),
+                                           str_phone.get(),
+                                           deleviry_window,
+                                           str_error_msg)).grid(row=5, column=1, sticky=W)
+
+
+def finish_deleviry(person_name, adress, phone, window, error_massage):
+    # checks if person_name, adress, phone  dont have a value and shows error message.
+    if "" in [person_name, adress, phone]:
+        error_massage.set("No field can be blank.")
+        return
+    # checks if phone is not a num and shows error message.
+    try:
+        new_price = int(phone)
+    except ValueError:
+        error_massage.set("phone number must be a number.")
+        return
+    else:
+        total_price = total_cost() + 5
+        row_list = ["deleviry", person_name, adress, phone]
+
+        for item in order_list:
+            row_list.append(item)
+        row_list.append(total_price)
+
+        output_file = open("orders.csv", "w")
+        writer = csv.writer(output_file)
+        writer.writerow(row_list)
+
+        output_file.close()
+        close_window(window)
+        order_list.clear()
+
+
+
+
+def takeaway(window):
+    close_window(window)
     takaway_window = Toplevel(root)
     takaway_window.title("Add comic")
     takaway_window.geometry("440x208")
@@ -173,35 +245,43 @@ def takeaway():
 
     Label(takaway_window, text="name:").grid(row=2, column=0, sticky=E)
 
-    str_new_name = StringVar("")
+    str_person_name = StringVar("")
     str_error_msg = StringVar("")
 
-    Entry(takaway_window, textvariable=str_new_name).grid(row=0, column=1, sticky=E + W)
+    Entry(takaway_window, textvariable=str_person_name).grid(row=0, column=1, sticky=E + W)
 
-    Label(takaway_window, textvariable=str_error_msg, fg="red").grid(row=4, column=0, columnspan=2, sticky=N + E + S + W)
+    Label(takaway_window, textvariable=str_error_msg, fg="red").grid(row=4, column=0, columnspan=2,
+                                                                     sticky=N + E + S + W)
     # closes the window
     Button(takaway_window, text="Cancel", bg="#ffc510", fg="white",
            command=lambda: close_window(takaway_window)).grid(row=5, column=0, sticky=E)
     # creates the comic and closes the window.
     Button(takaway_window, text="finish", bg="#f6db35", fg="white",
-           command=lambda: finish_and_close(str_new_name.get(),
-                                            takaway_window,
-                                            str_error_msg)).grid(row=5, column=1, sticky=W)
-def finish_and_close(preson_name, window, error_massage):
+           command=lambda: finish_takeaway(str_person_name.get(),
+                                           takaway_window,
+                                           str_error_msg)).grid(row=5, column=1, sticky=W)
+
+
+def finish_takeaway(preson_name, window, error_massage):
     if "" in [preson_name]:
         error_massage.set("No field can be blank.")
         return
+    else:
+        total_price = total_cost()
+        row_list = []
+        row_list.append("takeaway")
+        row_list.append(preson_name)
+        for item in order_list:
+            row_list.append(item)
+        row_list.append(total_price)
 
-    total_price = total_cost()
-    output_file = open("orders.csv", "w")
-    writer = csv.writer(output_file)
-    writer.writerow(preson_name, order_list, total_price)
-    output_file.close()
+        output_file = open("orders.csv", "w")
+        writer = csv.writer(output_file)
+        writer.writerow(row_list)
 
-    close_window(window)
+        output_file.close()
 
-
-
+        close_window(window)
 
 
 food_selector = Listbox(root, height=10)
