@@ -63,8 +63,8 @@ def get_food(the_title):
 
 def add_to_order(food):
     # checks if there is more than 0 stock and provid an error mesage
-    stock = food.get_stock()
-    if stock <= 0:
+    the_stock = food.get_stock()
+    if the_stock <= 0:
         food_name = food.get_name()
         print("there are no {} avalible".format(food_name))
         error_window = Toplevel(root)
@@ -73,7 +73,7 @@ def add_to_order(food):
         error_window.option_add("*Font", "LucidaGrande 20")
         Label(error_window, text="there are no {} avalible".format(food_name))
     # decreses the stock
-    new_stock = stock - 1
+    new_stock = the_stock - 1
     food.set_stock(new_stock)
     print(new_stock)
     # adds chosen food to a oredr list
@@ -124,7 +124,6 @@ def remove_from_order(food):
         row=2,
         column=0,
         padx=40)
-    return total_cost
 
 
 def revew_order():
@@ -133,7 +132,7 @@ def revew_order():
     # creats order window
     revew_order_window = Toplevel(root)
     revew_order_window.title("Order")
-    revew_order_window.geometry("320x510")
+    revew_order_window.geometry("320x580")
     revew_order_window.option_add("*Font", "LucidaGrande 20")
 
     order_items = Listbox(revew_order_window, height=10)
@@ -143,6 +142,10 @@ def revew_order():
     Label(revew_order_window, text="Order", font=("LucidaGrande", 35, "bold"), fg="#ee5454").grid(row=0, column=0)
     Label(revew_order_window, text="total price: ${}".format(total_price)).grid(row=11, column=0, columnspan=2, pady=10)
     Label(revew_order_window, text="cost for delevery: $5").grid(row=12, column=0, columnspan=2, pady=10)
+    Button(revew_order_window, text="Close", bg="#4c69f6", fg="white", command=lambda: close_window(revew_order_window)).grid(
+        row=13,
+        column=0,
+        padx=40)
 
 
 def total_cost():
@@ -198,7 +201,7 @@ def deleviry(window):
                                                                column=0,
                                                                sticky=E)
     # creates the comic and closes the window.
-    Button(deleviry_window, text="Create", bg="#f6db35", fg="white",
+    Button(deleviry_window, text="Finish", bg="#f6db35", fg="white",
            command=lambda: finish_deleviry(str_person_name.get(),
                                            str_adress.get(),
                                            str_phone.get(),
@@ -232,8 +235,6 @@ def finish_deleviry(person_name, adress, phone, window, error_massage):
         output_file.close()
         close_window(window)
         order_list.clear()
-
-
 
 
 def takeaway(window):
