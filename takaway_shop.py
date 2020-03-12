@@ -251,7 +251,7 @@ def finish_delivery(person_name, address, phone, window, error_massage):
         return
     # checks if phone is not a num and shows error message.
     try:
-        new_price = int(phone)
+        the_phone = int(phone)
     except ValueError:
         error_massage.set("phone number must be a number.")
         return
