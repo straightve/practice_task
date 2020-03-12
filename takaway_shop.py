@@ -360,8 +360,8 @@ update_details = Button(root, text="Update Details", bg="#ee5454", fg="white", c
     food_selector.get(ACTIVE))))
 update_details.grid(row=12, column=0, sticky=E + W, padx=5)
 
-revew_order_button = Button(root, text="Revew order", bg="#ffc510", fg="white", command=lambda: review_order())
-revew_order_button.grid(row=11, column=1, sticky=E + W)
+review_order_button = Button(root, text="Revew order", bg="#ffc510", fg="white", command=lambda: review_order())
+review_order_button.grid(row=11, column=1, sticky=E + W)
 
 finish = Button(root, text="Finish", bg="#f6db35", fg="white", command=lambda: finish_order())
 finish.grid(row=12, column=1, sticky=E + W)
