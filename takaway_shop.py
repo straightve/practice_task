@@ -28,22 +28,23 @@ def update(food):
     """update the details displayed of a given comic.
 
         Args:
-            food(MyComic): the comic that you want to update the detail of.
+            food(FoodItems): the food that you want to update the detail of.
         """
-    print("update details")
     # checks that there is a comic in the list.
     try:
         str_name.set("Name: " + food.get_name())
     except AttributeError:
         messagebox.showerror("Error", "There are no comics")
         return
-    # puts the current cost, stock and title in the labels
+
+    # puts the current cost in the label.
     str_cost.set("Price: $" + str(food.get_price()))
+    # checks if there is more than 0 and then displays the availability.
     the_stock = food.get_stock()
     if the_stock > 0:
-        str_stock.set("Avalible: yes")
+        str_stock.set("Available: yes")
     else:
-        str_stock.set("Avalible: no")
+        str_stock.set("Available: no")
 
 
 def get_food(the_title):
@@ -52,7 +53,7 @@ def get_food(the_title):
     Args:
          the_title (int): the title of the food.
     returns:
-        food(MyComic) the food that the user clicked on.
+        food(FoodItems) the food that the user clicked on.
     """
     # finds the food from the food list.
     for food in food_list:
@@ -62,24 +63,32 @@ def get_food(the_title):
 
 
 def add_to_order(food):
-    # checks if there is more than 0 stock and provid an error mesage
+    """adds the name of the food to the order list and makes a confirmation window.
+
+        Args:
+            food(FoodItems): the food that is being added.
+        """
+    # checks if there is more than 0 stock and creates an error message.
     the_stock = food.get_stock()
     if the_stock <= 0:
         food_name = food.get_name()
         print("there are no {} avalible".format(food_name))
         error_window = Toplevel(root)
-        error_window.title("confomation")
+        error_window.title("confirmation")
         error_window.geometry("320x94")
         error_window.option_add("*Font", "LucidaGrande 20")
         Label(error_window, text="there are no {} avalible".format(food_name))
-    # decreses the stock
+
+    # decreases the stock.
     new_stock = the_stock - 1
     food.set_stock(new_stock)
     print(new_stock)
-    # adds chosen food to a oredr list
+
+    # adds chosen food to a order list.
     food_name = food.get_name()
     order_list.append(food_name)
-    # makes a confomation mesage
+
+    # makes a confirmation message.
     add_order_window = Toplevel(root)
     add_order_window.title("confomation")
     add_order_window.geometry("320x94")
@@ -103,54 +112,66 @@ def close_window(window):
 
 
 def remove_from_order(food):
+    """removes the name of the food from the order list and makes a confirmation window.
+
+            Args:
+                food(FoodItems): the food that is being added.
+
+            """
+    # finds food in order list and removes it.
     food_name = food.get_name()
-    # finds food in order list and removes it
     for the_food in order_list:
         if the_food == food_name:
             order_list.remove(the_food)
-            # increses the stock
-            stock = food.get_stock()
-            new_stock = stock + 1
+            # increases the stock.
+            the_stock = food.get_stock()
+            new_stock = the_stock + 1
             food.set_stock(new_stock)
-    # creats comfamation mesage
+    # creates confirmation message with a label and a button.
     remove_order_window = Toplevel(root)
     remove_order_window.title("confomation")
     remove_order_window.geometry("360x94")
     remove_order_window.option_add("*Font", "LucidaGrande 20")
 
     Label(remove_order_window, text=food_name + " removed from order.").grid(row=0, column=0, columnspan=2, sticky=W)
+    # closes the window.
     Button(remove_order_window, text="Ok", bg="#4c69f6", fg="white",
-           command=lambda: close_window(remove_order_window)).grid(
-        row=2,
-        column=0,
-        padx=40)
+           command=lambda: close_window(remove_order_window)).grid(row=2, column=0, padx=40)
 
 
-def revew_order():
-    # finds the total price
+def review_order():
+    """creates a window that shows the order."""
+    # finds the total price.
     total_price = total_cost()
-    # creats order window
-    revew_order_window = Toplevel(root)
-    revew_order_window.title("Order")
-    revew_order_window.geometry("320x580")
-    revew_order_window.option_add("*Font", "LucidaGrande 20")
+    # creates order window with a list box two labels and a button.
+    review_order_window = Toplevel(root)
+    review_order_window.title("Order")
+    review_order_window.geometry("320x580")
+    review_order_window.option_add("*Font", "LucidaGrande 20")
 
-    order_items = Listbox(revew_order_window, height=10)
+    order_items = Listbox(review_order_window, height=10)
     for food in order_list:
         order_items.insert(END, food)
     order_items.grid(row=1, column=0, rowspan=10, padx=5)
-    Label(revew_order_window, text="Order", font=("LucidaGrande", 35, "bold"), fg="#ee5454").grid(row=0, column=0)
-    Label(revew_order_window, text="total price: ${}".format(total_price)).grid(row=11, column=0, columnspan=2, pady=10)
-    Label(revew_order_window, text="cost for delevery: $5").grid(row=12, column=0, columnspan=2, pady=10)
-    Button(revew_order_window, text="Close", bg="#4c69f6", fg="white", command=lambda: close_window(revew_order_window)).grid(
+    Label(review_order_window, text="Order", font=("LucidaGrande", 35, "bold"), fg="#ee5454").grid(row=0, column=0)
+    Label(review_order_window, text="total price: ${}".format(total_price)).grid(row=11, column=0, columnspan=2,
+                                                                                 pady=10)
+    Label(review_order_window, text="cost for delevery: $5").grid(row=12, column=0, columnspan=2, pady=10)
+    # closes window.
+    Button(review_order_window, text="Close", bg="#4c69f6", fg="white",
+           command=lambda: close_window(review_order_window)).grid(
         row=13,
         column=0,
         padx=40)
 
 
 def total_cost():
+    """finds the total cost of the things in the order list.
+            returns:
+                total_price(int) the total price of the things ordered.
+            """
     total_price = 0
-    # for each food in order list it finds the price and adds it to total_price
+    # for each food in order list it finds the price and adds it to total_price.
     for the_food in order_list:
         food = get_food(the_food)
         the_price = food.get_price()
@@ -159,59 +180,73 @@ def total_cost():
 
 
 def finish_order():
-    takeaway_deleviry_window = Toplevel(root)
-    takeaway_deleviry_window.title("takeaway or deleviry")
-    takeaway_deleviry_window.geometry("440x208")
-    takeaway_deleviry_window.option_add("*Font", "LucidaGrande 20")
-    Button(takeaway_deleviry_window, text="deleviry", bg="#4c69f6", fg="white",
-           command=lambda: deleviry(takeaway_deleviry_window)).grid(row=0, column=0)
-    Button(takeaway_deleviry_window, text="takeaway", bg="#4c69f6", fg="white",
-           command=lambda: takeaway(takeaway_deleviry_window)).grid(row=0, column=1)
+    """a window that has buttons that lead to the delivery and takeaway windows"""
+    # creates a window with two buttons.
+    takeaway_delivery_window = Toplevel(root)
+    takeaway_delivery_window.title("takeaway or delivery")
+    takeaway_delivery_window.geometry("440x208")
+    takeaway_delivery_window.option_add("*Font", "LucidaGrande 20")
+    # takes you to delivery window.
+    Button(takeaway_delivery_window, text="delivery", bg="#4c69f6", fg="white",
+           command=lambda: delivery(takeaway_delivery_window)).grid(row=0, column=0)
+    # takes you to takeaway window.
+    Button(takeaway_delivery_window, text="takeaway", bg="#4c69f6", fg="white",
+           command=lambda: takeaway(takeaway_delivery_window)).grid(row=0, column=1)
 
 
-def deleviry(window):
+def delivery(window):
     """creates a window where you can enter details """
     close_window(window)
     # creates a window with 4 labels 2 buttons and 3 entries.
-    deleviry_window = Toplevel(root)
-    deleviry_window.title("deleviry")
-    deleviry_window.geometry("440x208")
-    deleviry_window.option_add("*Font", "LucidaGrande 20")
+    delivery_window = Toplevel(root)
+    delivery_window.title("delivery")
+    delivery_window.geometry("440x208")
+    delivery_window.option_add("*Font", "LucidaGrande 20")
 
-    Label(deleviry_window, text="name:").grid(row=0, column=0, sticky=E)
-    Label(deleviry_window, text="adress:").grid(row=1, column=0, sticky=E)
-    Label(deleviry_window, text="phone:").grid(row=2, column=0, sticky=E)
+    Label(delivery_window, text="name:").grid(row=0, column=0, sticky=E)
+    Label(delivery_window, text="address:").grid(row=1, column=0, sticky=E)
+    Label(delivery_window, text="phone:").grid(row=2, column=0, sticky=E)
 
     str_person_name = StringVar("")
-    str_adress = StringVar("")
+    str_address = StringVar("")
     str_phone = StringVar("")
     str_error_msg = StringVar("")
 
-    Entry(deleviry_window, textvariable=str_person_name).grid(row=0, column=1, sticky=E + W)
-    Entry(deleviry_window, textvariable=str_adress).grid(row=1, column=1, sticky=E + W)
-    Entry(deleviry_window, textvariable=str_phone).grid(row=2, column=1, sticky=E + W)
+    Entry(delivery_window, textvariable=str_person_name).grid(row=0, column=1, sticky=E + W)
+    Entry(delivery_window, textvariable=str_address).grid(row=1, column=1, sticky=E + W)
+    Entry(delivery_window, textvariable=str_phone).grid(row=2, column=1, sticky=E + W)
 
-    Label(deleviry_window, textvariable=str_error_msg, fg="red").grid(row=4,
+    Label(delivery_window, textvariable=str_error_msg, fg="red").grid(row=4,
                                                                       column=0,
                                                                       columnspan=2,
                                                                       sticky=N + E + S + W)
     # closes the window
-    Button(deleviry_window, text="Cancel", bg="#ffc510", fg="white",
-           command=lambda: close_window(deleviry_window)).grid(row=5,
+    Button(delivery_window, text="Cancel", bg="#ffc510", fg="white",
+           command=lambda: close_window(delivery_window)).grid(row=5,
                                                                column=0,
                                                                sticky=E)
     # creates the comic and closes the window.
-    Button(deleviry_window, text="Finish", bg="#f6db35", fg="white",
-           command=lambda: finish_deleviry(str_person_name.get(),
-                                           str_adress.get(),
+    Button(delivery_window, text="Finish", bg="#f6db35", fg="white",
+           command=lambda: finish_delivery(str_person_name.get(),
+                                           str_address.get(),
                                            str_phone.get(),
-                                           deleviry_window,
+                                           delivery_window,
                                            str_error_msg)).grid(row=5, column=1, sticky=W)
 
 
-def finish_deleviry(person_name, adress, phone, window, error_massage):
-    # checks if person_name, adress, phone  dont have a value and shows error message.
-    if "" in [person_name, adress, phone]:
+def finish_delivery(person_name, address, phone, window, error_massage):
+    """removes the name of the food from the order list and makes a confirmation window.
+
+                Args:
+                    person_name(str): the name put in in the delivery window.
+                    phone(str): the phone put in in the delivery window.
+                    address(str): the address put in in the delivery window.
+                    window(): the delivery window.
+                    error_massage(): the error message label from the delivery window
+
+                """
+    # checks if person_name, address, phone  dont have a value and shows error message.
+    if "" in [person_name, address, phone]:
         error_massage.set("No field can be blank.")
         return
     # checks if phone is not a num and shows error message.
@@ -221,23 +256,32 @@ def finish_deleviry(person_name, adress, phone, window, error_massage):
         error_massage.set("phone number must be a number.")
         return
     else:
+        # finds total price and creates a list with "delivery", person_name, address, phone in it.
         total_price = total_cost() + 5
-        row_list = ["deleviry", person_name, adress, phone]
+        row_list = ["delivery", person_name, address, phone]
 
+        # adds the items in order list to row_list.
         for item in order_list:
             row_list.append(item)
         row_list.append(total_price)
-
+        # writes order_ list to a csv file.
         output_file = open("orders.csv", "w")
         writer = csv.writer(output_file)
         writer.writerow(row_list)
 
+        # closes file, the window and clears the order list.
         output_file.close()
         close_window(window)
         order_list.clear()
 
 
 def takeaway(window):
+    """removes the name of the food from the order list and makes a confirmation window.
+
+                    Args:
+                        window(): the takeaway_delivery_window.
+
+                    """
     close_window(window)
     takaway_window = Toplevel(root)
     takaway_window.title("Add comic")
@@ -263,25 +307,37 @@ def takeaway(window):
                                            str_error_msg)).grid(row=5, column=1, sticky=W)
 
 
-def finish_takeaway(preson_name, window, error_massage):
-    if "" in [preson_name]:
+def finish_takeaway(person_name, window, error_massage):
+    """removes the name of the food from the order list and makes a confirmation window.
+
+                Args:
+                    person_name(str): the name put in in the delivery window.
+                    window(): the delivery window.
+                    error_massage(): the error message label from the delivery window
+
+                """
+    # checks that there is something in person_name.
+    if "" in [person_name]:
         error_massage.set("No field can be blank.")
         return
     else:
+        # finds the total price and creates a list with "takeaway", person_name in it.
         total_price = total_cost()
-        row_list = []
-        row_list.append("takeaway")
-        row_list.append(preson_name)
+        row_list = ["takeaway", person_name]
+
+        # adda the items in order list to roe_list.
         for item in order_list:
             row_list.append(item)
         row_list.append(total_price)
 
+        # writes it to a csv file.
         output_file = open("orders.csv", "w")
         writer = csv.writer(output_file)
         writer.writerow(row_list)
 
+        # closes the file, clears the order list and closes the window.
         output_file.close()
-
+        order_list.clear()
         close_window(window)
 
 
@@ -304,7 +360,7 @@ update_details = Button(root, text="Update Details", bg="#ee5454", fg="white", c
     food_selector.get(ACTIVE))))
 update_details.grid(row=12, column=0, sticky=E + W, padx=5)
 
-revew_order_button = Button(root, text="Revew order", bg="#ffc510", fg="white", command=lambda: revew_order())
+revew_order_button = Button(root, text="Revew order", bg="#ffc510", fg="white", command=lambda: review_order())
 revew_order_button.grid(row=11, column=1, sticky=E + W)
 
 finish = Button(root, text="Finish", bg="#f6db35", fg="white", command=lambda: finish_order())
